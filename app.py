@@ -329,22 +329,17 @@ def treinar_modelo():
 st.sidebar.title("💎 Pricing 2.0")
 menu = st.sidebar.radio("Navegação", ["Otimização (Lista)", "Auditoria IA", "Banco de Dados"])
 
-# Tenta carregar, mas não trava se falhar
+# Tenta carregar modelo (mas não trava se falhar)
 modelo, df_main, df_train, abc_map = treinar_modelo()
 
-# --- TRAVA DE SEGURANÇA SELETIVA ---
-if modelo is None:
-    if menu == "Banco de Dados":
-        pass 
-    else:
+# --- ABA: OTIMIZAÇÃO ---
+if menu == "Otimização (Lista)":
+    # Verifica se tem modelo treinado
+    if modelo is None:
         st.warning("⚠️ Nenhum dado encontrado. A IA precisa de dados históricos para funcionar.")
         st.info("👈 Clique na aba 'Banco de Dados' no menu à esquerda e faça o upload da sua primeira planilha.")
-        st.stop() 
-
-
-
-# --- ABA: OTIMIZAÇÃO ---
-elif menu == "Otimização (Lista)":
+        st.stop()
+    
     st.title("🚀 Sugestões de Preço Inteligentes")
     st.info("A IA está analisando cada produto para encontrar o preço ótimo que maximiza o lucro.")
     
@@ -676,6 +671,12 @@ elif menu == "Otimização (Lista)":
 
 # --- ABA: AUDITORIA ---
 elif menu == "Auditoria IA":
+    # Verifica se tem modelo treinado
+    if modelo is None:
+        st.warning("⚠️ Nenhum dado encontrado. A IA precisa de dados históricos para funcionar.")
+        st.info("👈 Clique na aba 'Banco de Dados' no menu à esquerda e faça o upload da sua primeira planilha.")
+        st.stop()
+    
     st.title("🕵️ Auditoria do Modelo")
     
     X_train, X_test, y_train, y_test = train_test_split(
