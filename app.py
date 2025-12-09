@@ -95,6 +95,7 @@ def mostrar_login():
                     st.warning("⚠️ Preencha todos os campos!")
         
         st.markdown("---")
+        st.info("**Usuário padrão:**\n\nUsuário: `admin`\n\nSenha: `admin`")
         st.markdown("</div>", unsafe_allow_html=True)
 
 def fazer_logout():
@@ -705,61 +706,7 @@ elif menu == "Auditoria IA":
 elif menu == "Banco de Dados":
     st.title("📂 Gestão de Dados")
     
-    # --- DOWNLOAD DE TEMPLATE ---
-    st.markdown("### 📥 Template para Atualização")
-    st.info("Baixe o template com as colunas corretas para facilitar o preenchimento dos dados.")
-    
-    # Cria template com colunas esperadas e exemplos
-    template_data = {
-        'Codigo': ['PROD001', 'PROD002', 'PROD003'],
-        'B1 Desc': ['Produto Exemplo 1', 'Produto Exemplo 2', 'Produto Exemplo 3'],
-        'Day of DATA': ['2024-12-01', '2024-12-01', '2024-12-01'],
-        'Categoria': ['CATEGORIA A', 'CATEGORIA B', 'CATEGORIA A'],
-        'custo': [50.00, 75.00, 30.00],
-        'preço varejo': [100.00, 150.00, 60.00],
-        'varejo concorrente': [95.00, 145.00, 65.00],
-        'un.7d varejo': [50, 30, 100],
-        'estoque': [500, 200, 800],
-        'Custo ADS com PAI': [10.00, 15.00, 5.00],
-        'tx conv aprox': [2.5, 3.0, 1.8]
-    }
-    
-    df_template = pd.DataFrame(template_data)
-    csv_template = df_template.to_csv(index=False).encode('utf-8')
-    
-    st.download_button(
-        label="📥 Baixar Template CSV",
-        data=csv_template,
-        file_name="template_atualizacao.csv",
-        mime="text/csv",
-        help="Baixe este arquivo, preencha com seus dados e faça o upload abaixo"
-    )
-    
-    st.markdown("**Colunas do Template:**")
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown("""
-        - **Codigo**: Código do produto (obrigatório)
-        - **B1 Desc**: Nome/descrição do produto
-        - **Day of DATA**: Data de referência (AAAA-MM-DD)
-        - **Categoria**: Categoria do produto
-        - **custo**: Custo unitário do produto
-        - **preço varejo**: Preço de venda
-        """)
-    
-    with col2:
-        st.markdown("""
-        - **varejo concorrente**: Preço do concorrente
-        - **un.7d varejo**: Vendas dos últimos 7 dias
-        - **estoque**: Estoque atual
-        - **Custo ADS com PAI**: Custo de anúncios
-        - **tx conv aprox**: Taxa de conversão (%)
-        """)
-    
-    st.markdown("---")
-    
-    # --- UPLOAD DE ARQUIVO ---
+    # --- UPLOAD DE ARQUIVO (PRIORIDADE NO TOPO!) ---
     st.markdown("### 📤 Importar Dados")
     uploaded_file = st.file_uploader("Importar novas vendas (Excel/CSV)", type=['csv', 'xlsx'])
     
@@ -777,11 +724,68 @@ elif menu == "Banco de Dados":
     
     st.markdown("---")
     
+    # --- DOWNLOAD DE TEMPLATE ---
+    st.markdown("### 📥 Template para Atualização")
+    st.info("Baixe o template com as colunas corretas para facilitar o preenchimento dos dados.")
+    
+    try:
+        # Cria template com colunas esperadas e exemplos
+        template_data = {
+            'Codigo': ['PROD001', 'PROD002', 'PROD003'],
+            'B1 Desc': ['Produto Exemplo 1', 'Produto Exemplo 2', 'Produto Exemplo 3'],
+            'Day of DATA': ['2024-12-01', '2024-12-01', '2024-12-01'],
+            'Categoria': ['CATEGORIA A', 'CATEGORIA B', 'CATEGORIA A'],
+            'custo': [50.00, 75.00, 30.00],
+            'preço varejo': [100.00, 150.00, 60.00],
+            'varejo concorrente': [95.00, 145.00, 65.00],
+            'un.7d varejo': [50, 30, 100],
+            'estoque': [500, 200, 800],
+            'Custo ADS com PAI': [10.00, 15.00, 5.00],
+            'tx conv aprox': [2.5, 3.0, 1.8]
+        }
+        
+        df_template = pd.DataFrame(template_data)
+        csv_template = df_template.to_csv(index=False).encode('utf-8')
+        
+        st.download_button(
+            label="📥 Baixar Template CSV",
+            data=csv_template,
+            file_name="template_atualizacao.csv",
+            mime="text/csv",
+            help="Baixe este arquivo, preencha com seus dados e faça o upload acima"
+        )
+        
+        st.markdown("**Colunas do Template:**")
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("""
+            - **Codigo**: Código do produto (obrigatório)
+            - **B1 Desc**: Nome/descrição do produto
+            - **Day of DATA**: Data de referência (AAAA-MM-DD)
+            - **Categoria**: Categoria do produto
+            - **custo**: Custo unitário do produto
+            - **preço varejo**: Preço de venda
+            """)
+        
+        with col2:
+            st.markdown("""
+            - **varejo concorrente**: Preço do concorrente
+            - **un.7d varejo**: Vendas dos últimos 7 dias
+            - **estoque**: Estoque atual
+            - **Custo ADS com PAI**: Custo de anúncios
+            - **tx conv aprox**: Taxa de conversão (%)
+            """)
+    except Exception as e:
+        st.error(f"Erro ao criar template: {str(e)}")
+    
+    st.markdown("---")
+    
     # --- VISUALIZAÇÃO DOS DADOS ---
     st.markdown("### 👁️ Visualizar e Explorar Dados")
     
-    if os.path.exists(ARQUIVO_MESTRE):
-        try:
+    try:
+        if os.path.exists(ARQUIVO_MESTRE):
             df_banco = pd.read_csv(ARQUIVO_MESTRE)
             
             # Converte data_referencia para datetime se existir
@@ -924,17 +928,23 @@ elif menu == "Banco de Dados":
             else:
                 st.warning("Selecione pelo menos uma coluna para exibir.")
             
-        except Exception as e:
-            st.error(f"Erro ao carregar dados: {str(e)}")
-    else:
-        st.warning("⚠️ Nenhum dado encontrado no banco. Faça o upload de um arquivo primeiro.")
+        else:
+            st.warning("⚠️ Nenhum dado encontrado no banco. Faça o upload de um arquivo acima.")
+    
+    except Exception as e:
+        st.error(f"Erro ao carregar visualização dos dados: {str(e)}")
+        st.warning("⚠️ Use a seção de upload acima para adicionar dados.")
     
     st.markdown("---")
     
     # --- BACKUP ---
     st.markdown("### 💾 Backup dos Dados")
-    if os.path.exists(ARQUIVO_MESTRE):
-        st.info(f"Base Atual: {len(pd.read_csv(ARQUIVO_MESTRE))} registros históricos.")
-        with open(ARQUIVO_MESTRE, "rb") as f:
-
-            st.download_button("📥 Baixar Backup CSV", f, file_name="backup_dados.csv")
+    try:
+        if os.path.exists(ARQUIVO_MESTRE):
+            st.info(f"Base Atual: {len(pd.read_csv(ARQUIVO_MESTRE))} registros históricos.")
+            with open(ARQUIVO_MESTRE, "rb") as f:
+                st.download_button("📥 Baixar Backup CSV", f, file_name="backup_dados.csv")
+        else:
+            st.info("Nenhum backup disponível ainda. Faça upload de dados primeiro.")
+    except Exception as e:
+        st.error(f"Erro ao acessar backup: {str(e)}")
