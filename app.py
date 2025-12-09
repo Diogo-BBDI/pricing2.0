@@ -95,7 +95,6 @@ def mostrar_login():
                     st.warning("⚠️ Preencha todos os campos!")
         
         st.markdown("---")
-        st.info("**Usuário padrão:**\n\nUsuário: `admin`\n\nSenha: `admin`")
         st.markdown("</div>", unsafe_allow_html=True)
 
 def fazer_logout():
@@ -937,4 +936,5 @@ elif menu == "Banco de Dados":
     if os.path.exists(ARQUIVO_MESTRE):
         st.info(f"Base Atual: {len(pd.read_csv(ARQUIVO_MESTRE))} registros históricos.")
         with open(ARQUIVO_MESTRE, "rb") as f:
+
             st.download_button("📥 Baixar Backup CSV", f, file_name="backup_dados.csv")
