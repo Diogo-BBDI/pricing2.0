@@ -67,9 +67,9 @@ pricing/
 
 - Senhas armazenadas com hash SHA-256
 - Autenticação obrigatória
-- Session state protegido
 - Arquivo `usuarios.json` no .gitignore
 
 ## 📝 Licença
 
 Este projeto é privado e confidencial.
+
